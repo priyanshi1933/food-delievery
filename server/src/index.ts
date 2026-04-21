@@ -1,10 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import router from "./routes/route";
+import cors, { CorsOptions } from "cors";
+import path from "path"
 
 dotenv.config({ path: ".env.local" });
 
 const connectionString = process.env.MONGO_URI || "";
+const PORT = process.env.PORT || 3001;
 
 mongoose
   .connect(connectionString)
@@ -12,7 +16,17 @@ mongoose
   .catch((err) => console.log(err));
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const corsOptions: CorsOptions = {
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+app.use(express.json());
+app.use(cors(corsOptions));
+app.use(router);
+
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);

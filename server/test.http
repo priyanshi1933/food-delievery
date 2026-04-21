@@ -1,0 +1,58 @@
+POST http://localhost:3000/register 
+content-type: application/json
+
+{
+    "name":"Nishtha",
+    "email": "nishtha@gmail.com",
+    "password": "123456",
+    "role":"driver",
+    "phone":"9712079710"
+}
+
+###
+POST http://localhost:3000/login
+content-type: application/json
+
+{
+    "email": "nishtha@gmail.com",
+    "password": "123456"
+}
+
+###
+GET http://localhost:3000/users
+
+###
+POST http://localhost:3000/addRestaurant
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmYzljN2Q2NTI2MGIxOTE5N2Y4ZCIsImlhdCI6MTc3Njc0OTEzNiwiZXhwIjoxNzc2NzUyNzM2fQ.V-3H5Mavmw36U5TfiR7Wpci9bvJ0RSxvcbr-qpNqvck
+
+{
+    "managerId":"69e6f9d1fbb368f85e65c997",
+    "name": "Tasty Restaurant",
+    "address":"Adajan",
+    "categories":["Italian","Chinese","Punjabi"],
+    "rating":4
+}
+
+###
+GET http://localhost:3000/getRestaurant
+
+###
+POST http://localhost:3000/addMenu
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmYzljN2Q2NTI2MGIxOTE5N2Y4ZCIsImlhdCI6MTc3Njc1MzU1NiwiZXhwIjoxNzc2NzU3MTU2fQ.ve8WO2a5cG-KFSSB8KyJXlFIRtSJlU9VoIZr3CtC7jw
+
+{
+    "restaurantId":"69e70b76077fe03636e85acc",
+    "name": "Pizza",
+    "description":"Margherita pizza with extra cheese dip",
+    "price":200,
+    "category":"Italian",
+    "isAvailable":true
+}
+
+###
+GET http://localhost:3000/getMenu
+  
+###
+GET http://localhost:3000/getMenuById/69e6f9d1fbb368f85e65c997

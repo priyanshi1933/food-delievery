@@ -24,7 +24,8 @@ const UserSchema:Schema<IUser>=new Schema<IUser>({
     },
     role:{
         type:String,
-        enum:['customer','restaurant manager','driver'],
+        enum:['customer','manager','driver'],
+        default:'customer',
         required:true
     },
     phone:{
