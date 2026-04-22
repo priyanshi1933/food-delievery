@@ -42,9 +42,12 @@ const Login = () => {
     try {
       const res = await loginUser(user.email, user.password);
       saveToken(res.data.token);
+     
       const userRole = res.data.role;
-      console.log(userRole);
+       const userId = res.data.id ;
+     
       localStorage.setItem("role", userRole);
+       localStorage.setItem("id", userId);
       alert("Login Successfully");
       if (userRole === "customer") {
         navigate("/dispRestaurant");

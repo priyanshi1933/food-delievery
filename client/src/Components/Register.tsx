@@ -16,7 +16,7 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    // role:"",
+    role:"",
     phone: "",
   });
   const [user, setUser] = useState<IUser>({
@@ -45,7 +45,7 @@ const Register = () => {
         name: fieldErrors.name?.[0] || "",
         email: fieldErrors.email?.[0] || "",
         password: fieldErrors.password?.[0] || "",
-        // role:fieldErrors.role?.[0] || "",
+        role:fieldErrors.role?.[0] || "",
         phone: fieldErrors.phone?.[0] || "",
       });
       return;

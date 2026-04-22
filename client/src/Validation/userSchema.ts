@@ -7,7 +7,7 @@ export const userSchema = z.object({
     .max(10, "Name contain maximum of 10 characters"),
   email: z.string().email("Please enter valid email format"),
   password: z.string().min(6, "Password contain minimum of 6 characters"),
-  //   role:z.string(),
+  role: z.string().min(1, "Please select a role"), 
   phone: z
     .string()
     .length(10, "Only 10 digits are allowed")

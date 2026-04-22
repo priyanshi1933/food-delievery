@@ -19,8 +19,10 @@ const DisplayMenu = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token");
+
   const display = async () => {
-    setLoading(true); // Start loading
+    setLoading(true); 
     try {
       const res = await axios.get(
         `http://localhost:3000/getMenuById/${restaurantId}`,
@@ -33,6 +35,22 @@ const DisplayMenu = () => {
     }
   };
 
+   const handleDelete = async (menuId: string) => {
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      try {
+        await axios.delete(`http://localhost:3000/deleteMenu/${menuId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          data: { restaurantId: restaurantId } 
+        });
+        setMenuItems((prev) => prev.filter((item) => item._id !== menuId));
+        alert("Item deleted successfully!");
+      } catch (err: any) {
+        console.error("Delete error", err);
+        alert(err.response?.data?.message || "Failed to delete item.");
+      }
+    }
+  };
+
   useEffect(() => {
     if (restaurantId) {
       display();
@@ -41,9 +59,9 @@ const DisplayMenu = () => {
 
   return (
     <div className="bg-light min-vh-100">
-      <Navbar />
+      {/* <Navbar /> */}
 
-      {/* Header Section matching Restaurant style */}
+    
       <div className="bg-white border-bottom py-5 mb-5 shadow-sm">
         <div className="container">
           <div className="row align-items-center">
@@ -101,7 +119,7 @@ const DisplayMenu = () => {
 
                   {/* Overlapping Content Section */}
                   <div
-                    className="card-body p-4 mt-n5 bg-white rounded-top-4 position-relative"
+                    className="card-body p-4 mt-n5 bg-white rounded-top-5 position-relative"
                     style={{ marginTop: "-30px" }}
                   >
                     <div className="mb-2">
@@ -131,10 +149,18 @@ const DisplayMenu = () => {
                           localStorage.getItem("role") || "",
                         ) ? (
                           <>
-                            <button className="btn btn-outline-dark btn-sm rounded-3 px-3">
+                            
+                            <button 
+                              className="btn btn-outline-dark btn-sm rounded-3 px-3"
+                              onClick={() => navigate(`/editMenu/${item._id}/${restaurantId}`)}
+                            >
                               Edit
                             </button>
-                            <button className="btn btn-outline-danger btn-sm rounded-3 px-3">
+                         
+                            <button 
+                              className="btn btn-outline-danger btn-sm rounded-3 px-3"
+                              onClick={() => handleDelete(item._id)}
+                            >
                               Delete
                             </button>
                           </>

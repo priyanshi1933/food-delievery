@@ -95,14 +95,7 @@ const AddMenu = () => {
     if (hasError) return;
 
     try {
-      //   const token = localStorage.getItem("token");
-      //   await axios.post(`http://localhost:3000/addMenu`, data, {
-      //     headers: { Authorization: `Bearer ${token}` },
-      //   });
-      //   alert("Menu Created Successfully");
-      //   navigate("/dispRestaurant");
-      // } catch (error: any) {
-      //   alert("Error adding restaurant. Please try again.");
+    
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("description", data.description);

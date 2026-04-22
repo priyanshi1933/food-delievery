@@ -14,7 +14,7 @@ POST http://localhost:3000/login
 content-type: application/json
 
 {
-    "email": "nishtha@gmail.com",
+    "email": "priyanshi@gmail.com",
     "password": "123456"
 }
 
@@ -38,6 +38,27 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmYzljN
 GET http://localhost:3000/getRestaurant
 
 ###
+GET http://localhost:3000/getRestaurantById/69e6f9d1fbb368f85e65c997
+
+###
+PUT http://localhost:3000/updateRestaurant/69e84d1b126850dc904116d8
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODMyODUyLCJleHAiOjE3NzY4MzY0NTJ9.4e-z8tXe_tbDNfODEcdEKPTnZpT8IIk8DBB6gRckuyY
+
+{
+    "managerId":"69e6f9d1fbb368f85e65c997",
+    "name": "Tasty Restaurant",
+    "address":"Adajan",
+    "categories":["Italian","Chinese","Punjabi"],
+    "rating":4
+}
+
+###
+DELETE http://localhost:3000/deleteRestaurant/69e84d1b126850dc904116d8
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODMyODUyLCJleHAiOjE3NzY4MzY0NTJ9.4e-z8tXe_tbDNfODEcdEKPTnZpT8IIk8DBB6gRckuyY
+
+###
 POST http://localhost:3000/addMenu
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmYzljN2Q2NTI2MGIxOTE5N2Y4ZCIsImlhdCI6MTc3Njc1MzU1NiwiZXhwIjoxNzc2NzU3MTU2fQ.ve8WO2a5cG-KFSSB8KyJXlFIRtSJlU9VoIZr3CtC7jw
@@ -53,6 +74,100 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmYzljN
 
 ###
 GET http://localhost:3000/getMenu
-  
+
 ###
 GET http://localhost:3000/getMenuById/69e6f9d1fbb368f85e65c997
+
+###
+PUT http://localhost:3000/updateMenu/69e76070928446be636ef4e7
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODMzOTI1LCJleHAiOjE3NzY4Mzc1MjV9.bz6QRLV31ZL52eyb4cppu4Bv0Ft4Lot3ybb9CaH9Jmo
+
+{
+    "restaurantId":"69e76042928446be636ef4e6",
+    "name": "Cheese Cake",
+    "description":"Chocolate Chhese Cake",
+    "price":250,
+    "category":"Dessert",
+    "isAvailable":true
+}
+
+###
+DELETE http://localhost:3000/deleteMenu/69e764f4928446be636ef4e9
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODMzOTI1LCJleHAiOjE3NzY4Mzc1MjV9.bz6QRLV31ZL52eyb4cppu4Bv0Ft4Lot3ybb9CaH9Jmo
+
+{
+     "restaurantId":"69e76042928446be636ef4e6"
+}
+
+###
+POST http://localhost:3000/addDriver
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODQxOTM0LCJleHAiOjE3NzY4NDU1MzR9.ClHLi9ehtrbKMqakBwGOThd1lnVRxWX7IAHBbNjPvb4
+
+{
+    "userId": "69e6f9d1fbb368f85e65c997",
+    "vehicle": "Yamaha FZ - White"
+}
+
+###
+GET http://localhost:3000/getDriver/69e874de76317ff28ec40575
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODQxOTM0LCJleHAiOjE3NzY4NDU1MzR9.ClHLi9ehtrbKMqakBwGOThd1lnVRxWX7IAHBbNjPvb4
+
+###
+PATCH http://localhost:3000/update-location
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODQxOTM0LCJleHAiOjE3NzY4NDU1MzR9.ClHLi9ehtrbKMqakBwGOThd1lnVRxWX7IAHBbNjPvb4
+
+{
+    "driverId": "69e874de76317ff28ec40575",
+    "lat": 21.1702,
+    "lng": 72.8311
+}
+
+###
+POST http://localhost:3000/orders/checkout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTcwNjA4NzY4M2VjN2M1ZDE1OGY0MCIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc3Njg1MTA0NywiZXhwIjoxNzc2ODU0NjQ3fQ.4RprGShEoG3yz9gStLEIBrEuAU6WjLLZUUDlLA87vNA
+Content-Type: application/json
+
+{
+  "customerId": "69e706087683ec7c5d158f40",
+  "restaurantId": "69e85fe95770b88d2461c819",
+  "items": [
+    {
+      "menuItemId": "69e860275770b88d2461c81a",
+      "name": "Margherita Pizza",
+      "priceAtTime": 200.00,
+      "quantity": 2
+    }
+  ],
+  "deliveryAddress": "123 Green Avenue, Surat, Gujarat",
+  "deliveryCoords": { "lat": 21.1702, "lng": 72.8311 },
+  "totalAmount": 400.00
+}
+
+###
+PATCH http://localhost:3000/orders/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODUxMjIwLCJleHAiOjE3NzY4NTQ4MjB9.hAmCMiqNOnVxCE8zi4afGc9I2ONHoBrzIpz27xpnXA4
+Content-Type: application/json
+
+{
+  "orderId": "69e898c0ca09aaf4a724bf9b",
+  "status": "ON_THE_WAY"
+}
+
+###
+PATCH http://localhost:3000/orders/claim
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODUxMjIwLCJleHAiOjE3NzY4NTQ4MjB9.hAmCMiqNOnVxCE8zi4afGc9I2ONHoBrzIpz27xpnXA4
+Content-Type: application/json
+
+{
+  "orderId": "69e898c0ca09aaf4a724bf9b",
+  "driverId": "69e874de76317ff28ec40575"
+}
+
+###
+GET http://localhost:3000/orders/track/69e898c0ca09aaf4a724bf9b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODUxMjIwLCJleHAiOjE3NzY4NTQ4MjB9.hAmCMiqNOnVxCE8zi4afGc9I2ONHoBrzIpz27xpnXA4
