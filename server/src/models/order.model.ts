@@ -10,7 +10,14 @@ export interface IOrder extends Document {
     priceAtTime: number;
     quantity: number;
   }[];
-  status: "PENDING" | "ACCEPTED" | "READY" | "PICKED_UP" | "ON_THE_WAY" | "DELIVERED" | "CANCELLED";
+  status:
+    | "PENDING"
+    | "ACCEPTED"
+    | "READY"
+    | "PICKED_UP"
+    | "ON_THE_WAY"
+    | "DELIVERED"
+    | "CANCELLED";
   statusHistory: {
     status: string;
     timestamp: Date;
@@ -30,9 +37,13 @@ export interface IOrder extends Document {
 const OrderSchema: Schema<IOrder> = new Schema<IOrder>(
   {
     customerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    restaurantId: { type: Schema.Types.ObjectId, ref: "Restaurant", required: true },
-    driverId: { type: Schema.Types.ObjectId, ref: "Driver" }, 
-    
+    restaurantId: {
+      type: Schema.Types.ObjectId,
+      ref: "Restaurant",
+      required: true,
+    },
+    driverId: { type: Schema.Types.ObjectId, ref: "Driver" },
+
     items: [
       {
         menuItemId: { type: Schema.Types.ObjectId, required: true },
@@ -44,7 +55,15 @@ const OrderSchema: Schema<IOrder> = new Schema<IOrder>(
 
     status: {
       type: String,
-      enum: ["PENDING", "ACCEPTED", "READY", "PICKED_UP", "ON_THE_WAY", "DELIVERED", "CANCELLED"],
+      enum: [
+        "PENDING",
+        "ACCEPTED",
+        "READY",
+        "PICKED_UP",
+        "ON_THE_WAY",
+        "DELIVERED",
+        "CANCELLED",
+      ],
       default: "PENDING",
     },
 
@@ -56,7 +75,7 @@ const OrderSchema: Schema<IOrder> = new Schema<IOrder>(
     ],
 
     deliveryAddress: { type: String, required: true },
-    
+
     deliveryCoords: {
       lat: { type: Number, required: true },
       lng: { type: Number, required: true },
@@ -71,7 +90,7 @@ const OrderSchema: Schema<IOrder> = new Schema<IOrder>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const OrderModel = mongoose.model<IOrder>("Order", OrderSchema);

@@ -3,23 +3,15 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { userSchema } from "../Validation/userSchema";
 
-interface IUser {
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-  phone: string;
-}
-
 const Register = () => {
   const [msg, setMsg] = useState({
     name: "",
     email: "",
     password: "",
-    role:"",
+    role: "",
     phone: "",
   });
-  const [user, setUser] = useState<IUser>({
+  const [user, setUser] = useState({
     name: "",
     email: "",
     password: "",
@@ -45,7 +37,7 @@ const Register = () => {
         name: fieldErrors.name?.[0] || "",
         email: fieldErrors.email?.[0] || "",
         password: fieldErrors.password?.[0] || "",
-        role:fieldErrors.role?.[0] || "",
+        role: fieldErrors.role?.[0] || "",
         phone: fieldErrors.phone?.[0] || "",
       });
       return;
@@ -63,121 +55,132 @@ const Register = () => {
     }
   };
 
-  const styles = {
-    wrapper: {
-      height: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: "#f8f9fa",
-    },
-    card: {
-      background: "white",
-      padding: "2.5rem",
-      borderRadius: "15px",
-      boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-      width: "100%",
-      maxWidth: "450px",
-    },
-    errorText: {
-      color: "#dc3545",
-      fontSize: "0.85rem",
-      textAlign: "left" as const,
-      marginTop: "4px",
-      minHeight: "20px",
-    },
-  };
-
   return (
-    <div style={styles.wrapper}>
-      <form style={styles.card} onSubmit={handleSubmit}>
-        <h2
-          className="text-center mb-4"
-          style={{ fontWeight: 700, color: "#333" }}
+    <div className="container-fluid vh-100 p-0 overflow-hidden">
+      <div className="row g-0 vh-100">
+        <div
+          className="col-lg-6 d-none d-lg-flex flex-column justify-content-center p-5 text-white"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('./register.jpeg')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
-          Create Account
-        </h2>
-        <div className="mb-3">
-          <label className="form-label">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={user.name}
-            placeholder="Enter your name"
-            onChange={handleChange}
-            className={`form-control ${msg.name ? "is-invalid" : ""}`}
-          />
-          <div style={styles.errorText}>{msg.name}</div>
+          <h1 className="display-3 fw-bold">
+            Food of
+            <br />
+            Your Choice.
+          </h1>
+          <p className="lead opacity-75">
+            Delivered Hot and Fresh
+          </p>
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Email Address</label>
-          <input
-            type="email"
-            name="email"
-            value={user.email}
-            placeholder="name@example.com"
-            onChange={handleChange}
-            className={`form-control ${msg.email ? "is-invalid" : ""}`}
-          />
-          <div style={styles.errorText}>{msg.email}</div>
-        </div>
+        <div className="col-lg-6 d-flex align-items-center justify-content-center bg-white p-4">
+          <div className="w-100" style={{ maxWidth: "400px" }}>
+            <div className="text-center mb-5">
+              <h2 className="fw-bold">Create Account</h2>
+              <p className="text-secondary">
+                It's free and only takes a minute
+              </p>
+            </div>
 
-        <div className="mb-4">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={user.password}
-            onChange={handleChange}
-            placeholder="Enter secure password"
-            className={`form-control ${msg.password ? "is-invalid" : ""}`}
-          />
-          <div style={styles.errorText}>{msg.password}</div>
-        </div>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label fw-semibold small">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={user.name}
+                  onChange={handleChange}
+                  className={`form-control p-2 ${msg.name ? "is-invalid" : ""}`}
+                  placeholder="Enter your name"
+                />
+                <div className="invalid-feedback">{msg.name}</div>
+              </div>
 
-        <div className="mb-3">
-          <label className="form-label">Role</label>
-         
-          <select name="role" value={user.role} onChange={handleChange} className="form-select" aria-label="Default select example">
-            <option selected>Open this select menu</option>
-            <option value="customer">Customer</option>
-            <option value="manager">Manager</option>
-            <option value="driver">Driver</option>
-          </select>
-          
-        </div>
-         <div className="mb-4">
-          <label className="form-label">Phone</label>
-          <input
-            type="text"
-            name="phone"
-            value={user.phone}
-            onChange={handleChange}
-            placeholder="Enter secure phone"
-            className={`form-control ${msg.phone ? "is-invalid" : ""}`}
-          />
-          <div style={styles.errorText}>{msg.phone}</div>
-        </div>
+              <div className="mb-3">
+                <label className="form-label fw-semibold small">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={user.email}
+                  onChange={handleChange}
+                  className={`form-control p-2 ${msg.email ? "is-invalid" : ""}`}
+                  placeholder="name@example.com"
+                />
+                <div className="invalid-feedback">{msg.email}</div>
+              </div>
 
-        <button
-          type="submit"
-          className="btn btn-dark w-100 py-2"
-          style={{ borderRadius: "8px", fontWeight: 600 }}
-        >
-          Register Now
-        </button>
+              <div className="row">
+                <div className="col-6 mb-3">
+                  <label className="form-label fw-semibold small">Role</label>
+                  <select
+                    name="role"
+                    value={user.role}
+                    onChange={handleChange}
+                    className={`form-select p-2 ${msg.role ? "is-invalid" : ""}`}
+                  >
+                    <option value="">Select</option>
+                    <option value="customer">Customer</option>
+                    <option value="manager">Manager</option>
+                    <option value="driver">Driver</option>
+                  </select>
+                  <div className="invalid-feedback">{msg.role}</div>
+                </div>
+                <div className="col-6 mb-3">
+                  <label className="form-label fw-semibold small">Phone</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={user.phone}
+                    onChange={handleChange}
+                    className={`form-control p-2 ${msg.phone ? "is-invalid" : ""}`}
+                    placeholder="987..."
+                  />
+                  <div className="invalid-feedback">{msg.phone}</div>
+                </div>
+              </div>
 
-        <p className="text-center mt-3 text-muted">
-          Already have an account?{" "}
-          <span
-            onClick={() => navigate("/")}
-            style={{ cursor: "pointer", color: "#667eea", fontWeight: "bold" }}
-          >
-            Login
-          </span>
-        </p>
-      </form>
+              <div className="mb-4">
+                <label className="form-label fw-semibold small">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={user.password}
+                  onChange={handleChange}
+                  className={`form-control p-2 ${msg.password ? "is-invalid" : ""}`}
+                  placeholder="••••••••"
+                />
+                <div className="invalid-feedback">{msg.password}</div>
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-dark w-100 py-2 fw-bold shadow-sm"
+              >
+                Sign Up
+              </button>
+            </form>
+
+            <div className="text-center mt-4">
+              <span className="text-muted small">
+                Already have an account?{" "}
+              </span>
+              <button
+                onClick={() => navigate("/")}
+                className="btn btn-link p-0 text-dark fw-bold text-decoration-none small"
+              >
+                Log In
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
