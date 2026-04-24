@@ -149,6 +149,10 @@ Content-Type: application/json
 }
 
 ###
+GET http://localhost:3000/orders/restaurant/:restaurantId
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODUxMjIwLCJleHAiOjE3NzY4NTQ4MjB9.hAmCMiqNOnVxCE8zi4afGc9I2ONHoBrzIpz27xpnXA4
+
+###
 PATCH http://localhost:3000/orders/status
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTZmOWQxZmJiMzY4Zjg1ZTY1Yzk5NyIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzc2ODUxMjIwLCJleHAiOjE3NzY4NTQ4MjB9.hAmCMiqNOnVxCE8zi4afGc9I2ONHoBrzIpz27xpnXA4
 Content-Type: application/json

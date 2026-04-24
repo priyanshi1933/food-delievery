@@ -78,8 +78,9 @@ const DisplayMenu = () => {
         newGlobalCart.push({ ...itemInfo, restaurantId, quantity: 1 });
       }
     }
-
-    localStorage.setItem("cart_items", JSON.stringify(newGlobalCart));
+ localStorage.setItem("current_restaurant_id", restaurantId || ""); 
+  
+  localStorage.setItem("cart_items", JSON.stringify(newGlobalCart));
     const updatedLocalQty: any = {};
     newGlobalCart.forEach((item: any) => {
       if (item.restaurantId === restaurantId) {

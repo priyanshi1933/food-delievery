@@ -42,7 +42,11 @@ const OrderSchema: Schema<IOrder> = new Schema<IOrder>(
       ref: "Restaurant",
       required: true,
     },
-    driverId: { type: Schema.Types.ObjectId, ref: "Driver" },
+    driverId: { 
+  type: mongoose.Schema.Types.ObjectId, 
+  ref: "User", 
+  default: null 
+},
 
     items: [
       {

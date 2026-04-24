@@ -40,7 +40,12 @@ const CartPage = () => {
   const handleCheckout = async () => {
     const token = localStorage.getItem("token");
     const customerId = localStorage.getItem("id");
-    const restaurantId = localStorage.getItem("current_restaurant_id");
+    const restaurantId = cartItems.length > 0 ? cartItems[0].restaurantId : localStorage.getItem("current_restaurant_id");
+
+  if (!restaurantId) {
+    return alert("Restaurant ID is missing. Please clear your cart and add items again.");
+  }
+   
 
     if (!address) return alert("Please enter a delivery address.");
     if (!token) return navigate("/login");
@@ -59,7 +64,7 @@ const CartPage = () => {
       deliveryCoords: { lat: 21.1702, lng: 72.8311 }, 
       totalAmount
     };
-
+   console.log("Payload being sent:", orderData);
     try {
       const res = await axios.post("http://localhost:3000/orders/checkout", orderData, {
         headers: { Authorization: `Bearer ${token}` }
@@ -144,7 +149,7 @@ const CartPage = () => {
           </div>
 
           <div className="col-lg-4">
-            <div className="card border-0 shadow-sm rounded-4 p-4 sticky-top" style={{ top: '100px' }}>
+            <div className="card border-0 shadow-sm rounded-4 p-4 sticky-top" style={{ top: '100px',zIndex: 10 }}>
               <h5 className="fw-bold mb-4">Payment Summary</h5>
               <div className="d-flex justify-content-between mb-2">
                 <span className="text-muted">Subtotal</span>

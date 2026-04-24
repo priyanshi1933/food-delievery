@@ -10,6 +10,7 @@ const Register = () => {
     password: "",
     role: "",
     phone: "",
+    vehicle: "", // Added this
   });
   const [user, setUser] = useState({
     name: "",
@@ -17,6 +18,7 @@ const Register = () => {
     password: "",
     role: "",
     phone: "",
+    vehicle: "", // Added this
   });
   const navigate = useNavigate();
 
@@ -39,6 +41,7 @@ const Register = () => {
         password: fieldErrors.password?.[0] || "",
         role: fieldErrors.role?.[0] || "",
         phone: fieldErrors.phone?.[0] || "",
+        vehicle: fieldErrors.vehicle?.[0] || "",
       });
       return;
     }
@@ -71,9 +74,7 @@ const Register = () => {
             <br />
             Your Choice.
           </h1>
-          <p className="lead opacity-75">
-            Delivered Hot and Fresh
-          </p>
+          <p className="lead opacity-75">Delivered Hot and Fresh</p>
         </div>
 
         <div className="col-lg-6 d-flex align-items-center justify-content-center bg-white p-4">
@@ -157,6 +158,24 @@ const Register = () => {
                   placeholder="••••••••"
                 />
                 <div className="invalid-feedback">{msg.password}</div>
+                {/* Move this OUTSIDE the password div for better layout */}
+                {user.role === "driver" && (
+                  <div className="mb-3 animate__animated animate__fadeIn">
+                    <label className="form-label fw-semibold small">
+                      Vehicle Model/Number
+                    </label>
+                    <input
+                      type="text"
+                      name="vehicle" // Important: matches the state key
+                      value={user.vehicle}
+                      onChange={handleChange}
+                      className={`form-control p-2 ${msg.vehicle ? "is-invalid" : ""}`}
+                      placeholder="e.g. Toyota Camry / Suzuki Access"
+                      required
+                    />
+                    <div className="invalid-feedback">{msg.vehicle}</div>
+                  </div>
+                )}
               </div>
 
               <button

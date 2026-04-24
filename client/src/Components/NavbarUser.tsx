@@ -1,41 +1,40 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../Utils/auth";
 
 const NavbarUser = () => {
-      const navigate = useNavigate();
-      const [cartCount, setCartCount] = useState(0);
-      const customerName = localStorage.getItem("name") || "Guest";
-      const updateCartCount = () => {
-        const items = JSON.parse(localStorage.getItem("cart_items") || "[]");
-        const total = items.reduce(
-          (acc: number, item: any) => acc + item.quantity,
-          0,
-        );
-        setCartCount(total);
-      };
-    
-      useEffect(() => {
-        updateCartCount();
-        // Listen for updates from DisplayMenu component
-        window.addEventListener("cartUpdate", updateCartCount);
-        window.addEventListener("storage", updateCartCount);
-    
-        return () => {
-          window.removeEventListener("cartUpdate", updateCartCount);
-          window.removeEventListener("storage", updateCartCount);
-        };
-      }, []);
-    
-      const handleLogout = () => {
-        logout();
-        navigate("/");
-      };
-    
+  const navigate = useNavigate();
+  const [cartCount, setCartCount] = useState(0);
+  const customerName = localStorage.getItem("name") || "Guest";
+  const updateCartCount = () => {
+    const items = JSON.parse(localStorage.getItem("cart_items") || "[]");
+    const total = items.reduce(
+      (acc: number, item: any) => acc + item.quantity,
+      0,
+    );
+    setCartCount(total);
+  };
+
+  useEffect(() => {
+    updateCartCount();
+    // Listen for updates from DisplayMenu component
+    window.addEventListener("cartUpdate", updateCartCount);
+    window.addEventListener("storage", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdate", updateCartCount);
+      window.removeEventListener("storage", updateCartCount);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
-   <>
-    <nav
+    <>
+      <nav
         className="navbar navbar-expand-lg bg-dark navbar-dark sticky-top shadow-sm py-2"
         style={{ height: "80px" }}
       >
@@ -85,8 +84,13 @@ const NavbarUser = () => {
                 </span>
               )}
             </div>
-
-            <div className="dropdown">
+            <button
+              className="btn btn-outline-light"
+              onClick={() => navigate("/order-history")}
+            >
+              <i className="bi bi-clock-history me-2"></i> My Orders
+            </button>
+            <div className="dropdown ms-3">
               <div
                 className="d-flex align-items-center text-white dropdown-toggle cursor-pointer"
                 data-bs-toggle="dropdown"
@@ -118,9 +122,8 @@ const NavbarUser = () => {
           </div>
         </div>
       </nav>
-        
-        </>
-  )
-}
+    </>
+  );
+};
 
-export default NavbarUser
+export default NavbarUser;

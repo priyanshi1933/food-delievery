@@ -14,6 +14,10 @@ import Dashboard from "./Components/Dashboard";
 import CartPage from "./Components/Cart";
 import NavbarUser from "./Components/NavbarUser";
 import Footer from "./Components/Footer";
+import ManagerDashboard from "./Components/ManagerDashboard";
+import DriverDashboard from "./Components/DriverDashboard";
+import TrackOrder from "./Components/TrackOrder";
+import OrderHistory from "./Components/OrderHistory";
 
 function App() {
   const navigate = useNavigate();
@@ -34,7 +38,10 @@ function App() {
           <Route path="/addRestaurant" element={<AddRestaurant />}></Route>
           <Route path="/dispRestaurant" element={<DispRestaurant />}></Route>
           <Route path="/editRestaurant/:id" element={<EditRestaurant />} />
-
+          <Route path="/managerDashboard" element={<ManagerDashboard />} />
+          <Route path="/driverDashboard" element={<DriverDashboard />} />
+          <Route path="/orders/track/:orderId" element={<TrackOrder />} />
+           <Route path="/order-history" element={<OrderHistory />} />
           <Route path="/addMenu/:restaurantId" element={<AddMenu />}></Route>
           <Route
             path="/dispMenu/:restaurantId"
@@ -45,9 +52,9 @@ function App() {
             element={<EditMenu />}
           />
           <Route path="/cart" element={<CartPage />} />
- <Route path="/navbarUser" element={<NavbarUser />}></Route>
+          <Route path="/navbarUser" element={<NavbarUser />}></Route>
           <Route path="/navbar" element={<Navbar />}></Route>
-             <Route path="/footer" element={<Footer />}></Route>
+          <Route path="/footer" element={<Footer />}></Route>
         </Route>
       </Routes>
     </>

@@ -121,7 +121,7 @@ const AddMenu = () => {
 
   return (
     <div className="bg-light min-vh-100">
-      <Navbar />
+      {/* <Navbar /> */}
 
       <div className="container py-5">
         <div className="row justify-content-center">

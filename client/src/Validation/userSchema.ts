@@ -12,4 +12,11 @@ export const userSchema = z.object({
     .string()
     .length(10, "Only 10 digits are allowed")
     .regex(/^\d+$/, "Phone number must contain only numbers"),
-});
+      vehicle: z.string().optional(), 
+}).refine((data) => {
+  if (data.role === "driver" && !data.vehicle) return false;
+  return true;
+}, {
+  message: "Vehicle is required for drivers",
+  path: ["vehicle"],
+});;
