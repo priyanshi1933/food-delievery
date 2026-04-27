@@ -8,6 +8,9 @@ import Footer from "./Footer";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
+  const [searchQuery,setSearchQuery]=useState("");
+  const [selectedCategory,setSelectedCategory]=useState("All");
+  const categories=["All","Italian","Punjabi","Chinese","Desserts","Fast Food"];
   const customerName = localStorage.getItem("name") || "Guest";
   const updateCartCount = () => {
     const items = JSON.parse(localStorage.getItem("cart_items") || "[]");
@@ -20,12 +23,15 @@ const Dashboard = () => {
 
   useEffect(() => {
     updateCartCount();
+    const handleSearch=(e:any)=>setSearchQuery(e.detail);
     // Listen for updates from DisplayMenu component
     window.addEventListener("cartUpdate", updateCartCount);
+    window.addEventListener("searchUpdate",handleSearch as EventListener);
     window.addEventListener("storage", updateCartCount);
 
     return () => {
       window.removeEventListener("cartUpdate", updateCartCount);
+      window.removeEventListener("searchUpdate",handleSearch as EventListener);
       window.removeEventListener("storage", updateCartCount);
     };
   }, []);
@@ -38,6 +44,7 @@ const Dashboard = () => {
   return (
     <div className="bg-light min-vh-100">
         <NavbarUser/>
+       
       {/* <nav
         className="navbar navbar-expand-lg bg-dark navbar-dark sticky-top shadow-sm py-2"
         style={{ height: "80px" }}
@@ -219,8 +226,25 @@ const Dashboard = () => {
         </button>
       </div>
 
+
+       <div className="container mt-4">
+          <div className="d-flex gap-2 overflow-auto pb-3" style={{whiteSpace:'nowrap',scrollbarWidth:'none'}}>
+           {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`btn rounded-pill px-4 fw-bold shadow-sm border-0 ${
+                selectedCategory === cat ? "btn-dark" : "btn-white text-muted"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+          </div>
+        </div>
+
       <div className="container-fluid mt-2">
-        <DispRestaurant />
+        <DispRestaurant searchQuery={searchQuery} category={selectedCategory}/>
       </div>
      
       <Footer/>

@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import router from "./routes/route";
 import cors, { CorsOptions } from "cors";
 import path from "path"
-import http from "http"; // 1. Import http
+import http from "http";
 import { Server } from "socket.io";
 
 dotenv.config({ path: ".env.local" });

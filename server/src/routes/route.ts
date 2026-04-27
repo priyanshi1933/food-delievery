@@ -7,7 +7,7 @@ import { addDriver,getDriverProfile, patchLocation } from "../controllers/driver
 import upload from '../config/multer';
 import {addMenu,readMenu,readById,menuUpdate,menuRemove} from "../controllers/menu.controller"
 import { verifyToken } from "../middleware/auth";
-import { changeStatus, claimOrder, getAvailableOrders, getCustomerOrders, getRestaurantOrders, getTracking, placeOrder } from "../controllers/order.controller";
+import { changeStatus, claimOrder, getActiveDriverOrder, getAvailableOrders, getCustomerOrders, getRestaurantOrders, getTracking, placeOrder } from "../controllers/order.controller";
 const router = express.Router();
 
 router.post("/register", registerUser);
@@ -36,6 +36,7 @@ router.patch("/orders/status", verifyToken, changeStatus);
 router.patch("/orders/claim", verifyToken, claimOrder);
 router.get("/orders/available", verifyToken, getAvailableOrders);
 router.get("/orders/track/:orderId", verifyToken, getTracking);
+router.get("/orders/driver/:driverId/active", verifyToken, getActiveDriverOrder);
 router.get("/orders/customer/:customerId", verifyToken, getCustomerOrders);
 router.get("/orders/restaurant/:restaurantId", verifyToken, getRestaurantOrders);
 

@@ -13,25 +13,55 @@ const DriverDashboard = () => {
 
     const navigate=useNavigate();
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const available = await axios.get("http://localhost:3000/orders/available", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAvailableOrders(available.data);
+  // const fetchData = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const available = await axios.get("http://localhost:3000/orders/available", {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+  //     setAvailableOrders(available.data);
 
-      // 2. Check if this driver already has an active (not delivered) order
-      const active = await axios.get(`http://localhost:3000/orders/driver/${driverId}/active`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setActiveOrder(active.data[0] || null);
-    } catch (err) {
-      console.error("Error fetching driver data");
-    } finally {
-      setLoading(false);
+  //     const active = await axios.get(`http://localhost:3000/orders/driver/${driverId}/active`, {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+  //     setActiveOrder(active.data[0] || null);
+  //   } catch (err) {
+  //     console.error("Error fetching driver data");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  
+
+const fetchData = async () => {
+  setLoading(true);
+  try {
+    const available = await axios.get("http://localhost:3000/orders/available", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setAvailableOrders(available.data);
+
+    const active = await axios.get(`http://localhost:3000/orders/driver/${driverId}/active`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (active.data && active.data.length > 0) {
+      setActiveOrder(active.data[0]);
+    } else {
+      setActiveOrder(null);
     }
-  };
+  } catch (err) {
+    console.error("Fetch error:", err);
+    setActiveOrder(null);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
   useEffect(() => {
     fetchData();
@@ -41,26 +71,50 @@ const DriverDashboard = () => {
     navigate("/login");
   };
 
-  const handleClaim = async (orderId: string) => {
-    try {
-      await axios.patch("http://localhost:3000/orders/claim", { orderId, driverId }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchData();
-    } catch (err) { alert("Could not claim order"); }
-  };
+  // const handleClaim = async (orderId: string) => {
+  //   try {
+  //     await axios.patch("http://localhost:3000/orders/claim", { orderId, driverId }, {
+  //       headers: { Authorization: `Bearer ${token}` }
+  //     });
+  //     fetchData();
+  //   } catch (err) { alert("Could not claim order"); }
+  // };
+
+const handleClaim = async (orderId: string) => {
+  try {
+    const response = await axios.patch("http://localhost:3000/orders/claim", 
+      { orderId, driverId }, 
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    console.log("Claim successful:", response.data);
+    await fetchData(); 
+  } catch (err: any) {
+    console.error("Claim Error:", err.response?.data || err.message);
+    alert(err.response?.data?.message || "Could not claim order");
+  }
+};
 
 
 
+const updateStatus = async (orderId: string, nextStatus: string) => {
+  try {
+    await axios.patch("http://localhost:3000/orders/status", 
+      { 
+        orderId: orderId, // Check if this is the correct _id string
+        status: nextStatus 
+      }, 
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    
+    // IMPORTANT: Re-fetch the data to see the "Confirm Delivery" button
+    fetchData(); 
+  } catch (err) { 
+    alert("Update failed. Check console for details."); 
+    console.error(err);
+  }
+};
 
-  const updateStatus = async (orderId: string, nextStatus: string) => {
-    try {
-      await axios.patch("http://localhost:3000/orders/status", { orderId, status: nextStatus }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchData();
-    } catch (err) { alert("Update failed"); }
-  };
+
 
   return (
     <>
@@ -110,42 +164,57 @@ const DriverDashboard = () => {
       <h2 className="fw-bold mb-4">Driver Portal</h2>
 
       {/* SECTION: ACTIVE DELIVERY */}
-      {activeOrder ? (
-        <div className="card border-primary shadow-sm rounded-4 mb-5">
-          <div className="card-header bg-primary text-white py-3">
-            <h5 className="m-0">Current Delivery in Progress</h5>
-          </div>
-          <div className="card-body p-4">
-            <div className="row">
-              <div className="col-md-8">
-                <h6><strong>Customer:</strong> {activeOrder.customerId?.name}</h6>
-                <p><strong>Address:</strong> {activeOrder.deliveryAddress}</p>
-                <span className="badge bg-light text-primary border border-primary px-3 py-2">
-                  Status: {activeOrder.status}
-                </span>
-              </div>
-              <div className="col-md-4 text-end">
-                {activeOrder.status === "PICKED_UP" && (
-                  <button className="btn btn-warning w-100 mb-2" onClick={() => updateStatus(activeOrder._id, "ON_THE_WAY")}>
-                    Start Driving (On the Way)
-                  </button>
-                )}
-                {activeOrder.status === "ON_THE_WAY" && (
-                  <button className="btn btn-success w-100" onClick={() => updateStatus(activeOrder._id, "DELIVERED")}>
-                    Confirm Delivery
-                  </button>
-                )}
-              </div>
-
-              
-
-
-            </div>
-          </div>
+{activeOrder ? (
+  <div className="card border-primary shadow-sm rounded-4 mb-5">
+    <div className="card-header bg-primary text-white py-3">
+      <h5 className="m-0 fw-bold">Current Delivery in Progress</h5>
+    </div>
+    <div className="card-body p-4">
+      <div className="row align-items-center"> 
+        <div className="col-md-7 mb-3 mb-md-0">
+          <h6 className="mb-2">
+            <i className="bi bi-person-circle me-2 text-primary"></i>
+            <strong>Customer:</strong> {activeOrder.customerId?.name || "N/A"}
+          </h6>
+          <p className="text-muted mb-3">
+            <i className="bi bi-geo-alt-fill me-2 text-danger"></i>
+            <strong>Address:</strong> {activeOrder.deliveryAddress || "Althan"}
+          </p>
+          <span className="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill">
+            Current Status: {activeOrder.status}
+          </span>
         </div>
-      ) : (
-        <div className="alert alert-info rounded-4">You have no active deliveries. Claim an order below.</div>
-      )}
+        
+        <div className="col-md-5 text-md-end">
+          {activeOrder.status === "PICKED_UP" && (
+            <button 
+              className="btn btn-warning btn-lg w-100 fw-bold shadow-sm" 
+              onClick={() => updateStatus(activeOrder._id, "ON_THE_WAY")}
+            >
+              <i className="bi bi-truck me-2"></i> Start Driving
+            </button>
+          )}
+          {activeOrder.status === "ON_THE_WAY" && (
+            <button 
+              className="btn btn-success btn-lg w-100 fw-bold shadow-sm" 
+              onClick={() => updateStatus(activeOrder._id, "DELIVERED")}
+            >
+              <i className="bi bi-check-circle me-2"></i> Confirm Delivery
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+) : (
+  <div className="alert alert-info rounded-4 border-0 shadow-sm p-4">
+    <i className="bi bi-info-circle me-2"></i>
+    You have no active deliveries. Claim an order below.
+  </div>
+)}
+
+
+
 
       {/* SECTION: AVAILABLE ORDERS */}
       <h4 className="fw-bold mb-3">Available Pickups</h4>

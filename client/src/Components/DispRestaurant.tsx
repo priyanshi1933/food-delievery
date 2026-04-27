@@ -6,11 +6,24 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NavbarUser from "./NavbarUser";
 
-const DispRestaurant = () => {
+const DispRestaurant = ({ searchQuery="", category="All" }: { searchQuery?: string, category?: string }) => {
   const [restaurant, setRestaurant] = useState<any[]>([]);
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
+
+
+   const filteredRestaurants = restaurant.filter((r) => {
+    const query = searchQuery.toLowerCase();
+
+    const matchesCategory = category === "All" || 
+      (r.categories && r.categories.includes(category));
+
+    const matchesSearch = r.name.toLowerCase().includes(query) || 
+      r.address.toLowerCase().includes(query);
+
+    return matchesCategory && matchesSearch; 
+  });
 
   const fetchData = async () => {
     try {
@@ -50,7 +63,7 @@ const DispRestaurant = () => {
       </div>
       
       <div className="row g-4">
-        {restaurant.map((r) => (
+        {filteredRestaurants.map((r) => (
           <div key={r._id} className="col-12 col-md-6 col-lg-4">
             <div 
               className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative transition-all" 
@@ -79,13 +92,14 @@ const DispRestaurant = () => {
                       General
                     </span>
                   )}
+
                 </div>
                 <h4 className="fw-bold mb-1">{r.name}</h4>
                 <p className="text-muted small mb-3">
                   <i className="bi bi-geo-alt-fill text-danger me-1"></i> {r.address}
                 </p>
 
-                {/* Conditional Action Buttons */}
+              
                 <div className="d-grid gap-2">
                   {role === "manager" ? (
                     <>
@@ -140,6 +154,12 @@ const DispRestaurant = () => {
             </div>
           </div>
         ))}
+        {filteredRestaurants.length===0 && (
+          <div className="text-center py-5">
+            <h3>No restaurants found for "{searchQuery}"</h3>
+            <p className="text-muted">Try searching for a different food or cuisine.</p>
+          </div>
+        )}
       </div>
     </div>
     </>

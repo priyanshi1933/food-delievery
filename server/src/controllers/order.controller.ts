@@ -12,18 +12,37 @@ export const placeOrder = async (req: Request, res: Response) => {
   }
 };
 
+// export const changeStatus = async (req: Request, res: Response) => {
+//   try {
+//     const { orderId, status } = req.body;
+//     const updatedOrder = await updateOrderStatus(orderId, status);
+//     if (!updatedOrder) {
+//       res.status(400).json({ message: "Order not found" });
+//     }
+//     res.status(200).json(updatedOrder);
+//   } catch (error: any) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
+
+
 export const changeStatus = async (req: Request, res: Response) => {
   try {
     const { orderId, status } = req.body;
     const updatedOrder = await updateOrderStatus(orderId, status);
+    
     if (!updatedOrder) {
-      res.status(400).json({ message: "Order not found" });
+      // Add RETURN here to stop execution
+      return res.status(404).json({ message: "Order not found" });
     }
-    res.status(200).json(updatedOrder);
+    
+    // Success response
+    return res.status(200).json(updatedOrder);
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 };
+
 
 export const claimOrder = async (req: Request, res: Response) => {
   try {
@@ -58,23 +77,7 @@ export const claimOrder = async (req: Request, res: Response) => {
   }
 };
 
-// export const getTracking = async (req: Request, res: Response) => {
-//   try {
-//     const { orderId } = req.params;
 
-//     const order = await OrderModel.findById(orderId)
-//       .populate({
-//         path: "driverId",
-//         select: "currentLocation vehicle",
-//         populate: { path: "userId", select: "name phone" }
-//       })
-//       .populate("restaurantId", "name coordinates address");
-
-//     res.status(200).json(order);
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 
 export const getTracking = async (req: Request, res: Response) => {
   try {
@@ -92,6 +95,37 @@ export const getTracking = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// export const getTracking = async (req: Request, res: Response) => {
+//   try {
+//     const { orderId } = req.params;
+
+//     // Use .lean() to get a plain JS object instead of a Mongoose document
+//     const order: any = await OrderModel.findById(orderId)
+//       .populate("driverId", "name phone") 
+//       .populate("restaurantId")
+//       .lean();
+
+//     if (!order) return res.status(404).json({ message: "Order not found" });
+
+//     // Link the Driver Model data to the populated User data
+//     if (order.driverId && order.driverId._id) {
+//       const driverExtraInfo = await DriverModel.findOne({ userId: order.driverId._id });
+      
+//       if (driverExtraInfo) {
+//         // We can add these because we typed 'order' as 'any'
+//         order.driverId.currentLocation = driverExtraInfo.currentLocation;
+//         order.driverId.vehicle = driverExtraInfo.vehicle;
+//       }
+//     }
+
+//     res.status(200).json(order);
+//   } catch (error: any) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+
 
 export const getRestaurantOrders = async (req: Request, res: Response) => {
   try {
@@ -197,3 +231,29 @@ export const getCustomerOrders = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getActiveDriverOrder = async (req: Request, res: Response) => {
+  try {
+    const { driverId } = req.params;
+
+    if (!driverId || typeof driverId !== "string") {
+      return res.status(400).json({ message: "Valid Driver ID is required" });
+    }
+
+    const orders = await OrderModel.find({
+    
+      driverId: new mongoose.Types.ObjectId(driverId as string), 
+      status: { $in: ["PICKED_UP", "ON_THE_WAY"] }
+    })
+    .populate("customerId", "name phone")
+    .populate("restaurantId", "name address")
+    .lean();
+
+    res.status(200).json(orders);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+ };
+
+
+

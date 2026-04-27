@@ -58,6 +58,10 @@ const NavbarUser = () => {
               <input
                 className="form-control rounded-pill-start border-0 px-4 bg-light"
                 type="search"
+                onChange={(e)=>{
+                  const event=new CustomEvent("searchUpdate",{detail:e.target.value});
+                  window.dispatchEvent(event);
+                }}
                 placeholder="Search for food, cuisines..."
                 style={{ borderRadius: "50px 0 0 50px" }}
               />

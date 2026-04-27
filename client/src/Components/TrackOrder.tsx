@@ -1,80 +1,112 @@
-
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import NavbarUser from "./NavbarUser";
 import Footer from "./Footer";
-import { io } from "socket.io-client"; 
+import { io } from "socket.io-client";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 const socket = io("http://localhost:3000");
 
 // --- FIX LEAFLET ICONS ---
 // Default icons don't load correctly in React/Webpack/Vite
-const customerIcon = new L.Icon({
-  iconUrl: "https://flaticon.com",
-  iconSize: [35, 35],
+const defaultIcon = new L.Icon({
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
 });
-const driverIcon = new L.Icon({
-  iconUrl: "https://flaticon.com",
-  iconSize: [40, 40],
-});
-const restoIcon = new L.Icon({
-  iconUrl: "https://flaticon.com",
-  iconSize: [35, 35],
-});
+
+const customerIcon = defaultIcon;
+const driverIcon = defaultIcon;
+const restoIcon = defaultIcon;
+
+const RecenterMap = ({ coords }: { coords: [number, number] }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(coords, 14);
+  }, [coords]);
+  return null;
+};
 
 const TrackOrder = () => {
   const { orderId } = useParams();
+
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetching data from the Backend
-  const fetchTracking = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(
-        `http://localhost:3000/orders/track/${orderId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      console.log("Full Order Data:", res.data); // Inspect this in your browser console (F12)
-console.log("Driver Object:", res.data.driverId);
-      setOrder(res.data);
-    } catch (err) {
-      console.error("Tracking error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // useEffect(() => {
+  //   fetchTracking();
+  //    socket.emit("join_order", orderId);
+
+  //   // Listen for live movement
+  //   socket.on("driver_moved", (newCoords) => {
+  //     setOrder((prev: any) => {
+  //       if (!prev) return prev;
+  //       return {
+  //         ...prev,
+  //         driverId: {
+  //           ...prev.driverId,
+  //           currentLocation: newCoords
+  //         }
+  //       };
+  //     });
+  //   });
+
+  //   const interval = setInterval(fetchTracking, 10000); // Refresh every 10s
+  //  return () => {
+  //     socket.off("driver_moved");
+  //   };
+  // }, [orderId]);
+
+  // Inside DriverDashboard.tsx
+
+  // Inside TrackOrder.tsx
 
   useEffect(() => {
-    fetchTracking();
-     socket.emit("join_order", orderId);
+    const fetchTracking = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          `http://localhost:3000/orders/track/${orderId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
-    // Listen for live movement
-    socket.on("driver_moved", (newCoords) => {
+        setOrder(res.data);
+        setLoading(false);
+
+        socket.emit("joinOrderRoom", orderId);
+      } catch (err) {
+        console.error("Tracking error:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchTracking();
+    socket.on("locationUpdate", (data) => {
+      console.log("DRIVER MOVED TO:", data);
       setOrder((prev: any) => {
         if (!prev) return prev;
         return {
           ...prev,
           driverId: {
             ...prev.driverId,
-            currentLocation: newCoords
-          }
+            currentLocation: { lat: data.lat, lng: data.lng },
+          },
         };
       });
     });
-    
-    const interval = setInterval(fetchTracking, 10000); // Refresh every 10s
-   return () => {
-      socket.off("driver_moved");
+
+    return () => {
+      socket.off("locationUpdate");
     };
-  }, [orderId]);
+  }, [orderId]); 
 
   const getStatusConfig = (status: string) => {
     const config: any = {
@@ -125,8 +157,6 @@ console.log("Driver Object:", res.data.driverId);
     );
   };
 
-  
-
   if (loading && !order)
     return <div className="text-center py-5">Loading Live Tracking...</div>;
   if (!order) return <div className="text-center py-5">Order Not Found</div>;
@@ -139,9 +169,7 @@ console.log("Driver Object:", res.data.driverId);
       <div className="bg-light min-vh-100 py-5">
         <div className="container">
           <div className="row g-4 justify-content-center">
-            {/* LEFT COLUMN: MAP & STATUS */}
             <div className="col-lg-7">
-              {/* STATUS CARD */}
               <div className="card border-0 shadow-sm rounded-4 p-4 mb-4 text-center">
                 <div className={`display-5 text-${current.color} mb-2`}>
                   <i className={`bi ${current.icon}`}></i>
@@ -161,7 +189,6 @@ console.log("Driver Object:", res.data.driverId);
                 </small>
               </div>
 
-              {/* LIVE MAP CONTAINER */}
               <div
                 className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4"
                 style={{ height: "400px", zIndex: 1 }}
@@ -170,10 +197,19 @@ console.log("Driver Object:", res.data.driverId);
                   center={[order.deliveryCoords.lat, order.deliveryCoords.lng]}
                   zoom={14}
                   style={{ height: "100%", width: "100%" }}
+                  scrollWheelZoom={false} 
                 >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-                  {/* 1. Customer Location */}
+                  {order.driverId?.currentLocation && (
+                    <RecenterMap
+                      coords={[
+                        order.driverId.currentLocation.lat,
+                        order.driverId.currentLocation.lng,
+                      ]}
+                    />
+                  )}
+
                   <Marker
                     position={[
                       order.deliveryCoords.lat,
@@ -181,10 +217,9 @@ console.log("Driver Object:", res.data.driverId);
                     ]}
                     icon={customerIcon}
                   >
-                    <Popup>Your Delivery Address</Popup>
+                    <Popup>Your Location</Popup>
                   </Marker>
 
-                  {/* 2. Restaurant Location */}
                   {order.restaurantId?.coordinates && (
                     <Marker
                       position={[
@@ -197,7 +232,6 @@ console.log("Driver Object:", res.data.driverId);
                     </Marker>
                   )}
 
-                  {/* 3. Driver Live Location */}
                   {order.driverId?.currentLocation && (
                     <Marker
                       position={[
@@ -207,58 +241,61 @@ console.log("Driver Object:", res.data.driverId);
                       icon={driverIcon}
                     >
                       <Popup>
-                        <b>{order.driverId.userId?.name}</b> is here
+                        <b>{order.driverId.name || "Partner"}</b> is on the way!
                       </Popup>
                     </Marker>
                   )}
                 </MapContainer>
               </div>
 
-              {/* DRIVER DETAILS SECTION */}
+            
               <div className="mb-4">
-              {/* Replace your current driver info block with this */}
-<div className="mb-4">
- 
+                  
+                <div className="mb-4">
+                  {order.driverId ? (
+                    <div className="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div className="d-flex align-items-center">
+                          <div className="bg-primary bg-opacity-10 rounded-circle p-3 me-3 text-primary">
+                            <i className="bi bi-person-badge fs-2"></i>
+                          </div>
+                          <div>
+                            <p className="text-muted small mb-0">
+                              Delivery Partner
+                            </p>
+                            <h5 className="fw-bold mb-0">
+                              {/* Shortened path: direct to name */}
+                              {order.driverId.name || "Driver Assigned"}
+                            </h5>
+                            <small className="text-muted">
+                              Contact: {order.driverId.phone}
+                            </small>
+                          </div>
+                        </div>
 
-  {order.driverId ? (
-  <div className="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
-    <div className="d-flex align-items-center justify-content-between">
-      <div className="d-flex align-items-center">
-        <div className="bg-primary bg-opacity-10 rounded-circle p-3 me-3 text-primary">
-          <i className="bi bi-person-badge fs-2"></i>
-        </div>
-        <div>
-          <p className="text-muted small mb-0">Delivery Partner</p>
-          <h5 className="fw-bold mb-0">
-            {/* Shortened path: direct to name */}
-            {order.driverId.name || "Driver Assigned"}
-          </h5>
-          <small className="text-muted">Contact: {order.driverId.phone}</small>
-        </div>
-      </div>
-      
-      {order.driverId.phone && (
-        <a href={`tel:${order.driverId.phone}`} className="btn btn-dark rounded-pill px-4 shadow-sm">
-          <i className="bi bi-telephone-fill me-2"></i> Call
-        </a>
-      )}
-    </div>
-  </div>
-) : (
-  <div className="alert alert-info rounded-4 border-0 shadow-sm p-4">
-    <span>Finding a delivery partner...</span>
-  </div>
-)}
-
-</div>
-
+                        {order.driverId.phone && (
+                          <a
+                            href={`tel:${order.driverId.phone}`}
+                            className="btn btn-dark rounded-pill px-4 shadow-sm"
+                          >
+                            <i className="bi bi-telephone-fill me-2"></i> Call
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="alert alert-info rounded-4 border-0 shadow-sm p-4">
+                      <span>Finding a delivery partner...</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* RIGHT COLUMN: TIMELINE & SUMMARY */}
             <div className="col-lg-4">
               {/* TIMELINE LOG */}
-              <div className="card border-0 shadow-sm rounded-4 p-4 mb-4">
+              {/* <div className="card border-0 shadow-sm rounded-4 p-4 mb-4">
                 <h6 className="fw-bold mb-3">Timeline</h6>
                 <div className="ms-2">
                   {order.statusHistory
@@ -286,7 +323,38 @@ console.log("Driver Object:", res.data.driverId);
                     ))
                     .reverse()}
                 </div>
-              </div>
+              </div> */}
+
+              {/* Replace your Timeline Log mapping with this */}
+              {(order.statusHistory || [])
+                .map((h: any, i: number) => (
+                  <div
+                    key={i}
+                    className="d-flex border-start border-2 ps-3 pb-3 position-relative"
+                  >
+                    <div
+                      className="bg-success rounded-circle position-absolute"
+                      style={{
+                        width: "10px",
+                        height: "10px",
+                        left: "-6px",
+                        top: "6px",
+                      }}
+                    ></div>
+                    <div>
+                      <p className="fw-bold mb-0 small">
+                        {h.status.replace("_", " ")}
+                      </p>
+                      <small className="text-muted">
+                        {new Date(h.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </small>
+                    </div>
+                  </div>
+                ))
+                .reverse()}
 
               {/* ORDER SUMMARY */}
               <div className="card border-0 shadow-sm rounded-4 p-4">
