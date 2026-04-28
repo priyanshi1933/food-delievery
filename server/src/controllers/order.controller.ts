@@ -255,5 +255,30 @@ export const getActiveDriverOrder = async (req: Request, res: Response) => {
   }
  };
 
+ export const rateOrder = async (req: any, res: any) => {
+  try {
+    const { orderId } = req.params;
+    const { restoRating, driverRating } = req.body;
+
+    const updatedOrder = await OrderModel.findByIdAndUpdate(
+      orderId,
+      {
+        $set: {
+          "ratings.restaurant": restoRating,
+          "ratings.driver": driverRating,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedOrder) return res.status(404).json({ message: "Order not found" });
+
+    res.status(200).json({ message: "Rating saved", updatedOrder });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 

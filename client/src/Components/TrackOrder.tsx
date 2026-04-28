@@ -38,6 +38,9 @@ const TrackOrder = () => {
 
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [restoRating, setRestoRating] = useState(0);
+  const [driverRating, setDriverRating] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
 
   // useEffect(() => {
   //   fetchTracking();
@@ -106,7 +109,7 @@ const TrackOrder = () => {
     return () => {
       socket.off("locationUpdate");
     };
-  }, [orderId]); 
+  }, [orderId]);
 
   const getStatusConfig = (status: string) => {
     const config: any = {
@@ -163,6 +166,26 @@ const TrackOrder = () => {
 
   const current = getStatusConfig(order.status);
 
+  const handleRate = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `http://localhost:3000/orders/${orderId}/rate`,
+        {
+          restoRating,
+          driverRating,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      setSubmitted(true);
+      alert("Thanks for your feedback!");
+    } catch (err) {
+      console.error("Rating error:", err);
+    }
+  };
+
   return (
     <>
       <NavbarUser />
@@ -197,7 +220,7 @@ const TrackOrder = () => {
                   center={[order.deliveryCoords.lat, order.deliveryCoords.lng]}
                   zoom={14}
                   style={{ height: "100%", width: "100%" }}
-                  scrollWheelZoom={false} 
+                  scrollWheelZoom={false}
                 >
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
@@ -248,9 +271,7 @@ const TrackOrder = () => {
                 </MapContainer>
               </div>
 
-            
               <div className="mb-4">
-                  
                 <div className="mb-4">
                   {order.driverId ? (
                     <div className="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
@@ -378,6 +399,65 @@ const TrackOrder = () => {
                   <span>₹{order.totalAmount}</span>
                 </div>
               </div>
+
+              {order.status === "DELIVERED" &&
+                !order.ratings?.restaurant &&
+                !submitted && (
+                  <div className="card border-0 shadow-sm rounded-4 p-4 mt-4 bg-white">
+                    <h5 className="fw-bold mb-4">Rate Your Experience</h5>
+
+                    {/* Restaurant Rating */}
+                    <div className="mb-4">
+                      <p className="small mb-2 text-muted text-uppercase fw-bold">
+                        Food from {order.restaurantId?.name}
+                      </p>
+                      <div className="d-flex gap-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <i
+                            key={`resto-${star}`}
+                            className={`bi fs-3 ${star <= restoRating ? "bi-star-fill text-warning" : "bi-star text-dark"}`}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => setRestoRating(star)}
+                          ></i>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Driver Rating */}
+                    <div className="mb-4">
+                      <p className="small mb-2 text-muted text-uppercase fw-bold">
+                        Delivery by {order.driverId?.name || "Partner"}
+                      </p>
+                      <div className="d-flex gap-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <i
+                            key={`driver-${star}`}
+                            className={`bi fs-3 ${star <= driverRating ? "bi-star-fill text-warning" : "bi-star text-dark"}`}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => setDriverRating(star)}
+                          ></i>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      className="btn btn-primary w-100 rounded-pill fw-bold py-2"
+                      disabled={!restoRating || !driverRating}
+                      onClick={handleRate}
+                    >
+                      Submit Ratings
+                    </button>
+                  </div>
+                )}
+
+              {/* Show thank you message if they just submitted OR if it was already rated in the past */}
+              {(submitted || order.ratings?.restaurant) &&
+                order.status === "DELIVERED" && (
+                  <div className="alert alert-success rounded-4 border-0 shadow-sm mt-4 text-center">
+                    <i className="bi bi-star-fill text-warning me-2"></i>
+                    Feedback submitted! 
+                  </div>
+                )}
             </div>
           </div>
         </div>
